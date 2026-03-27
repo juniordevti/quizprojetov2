@@ -1,118 +1,168 @@
-const titulo = document.querySelector(".titulo");
-      const texto = titulo.textContent;
-      titulo.textContent = "";
-      let i = 0;
-      const digita = setInterval(() => {
-        titulo.textContent += texto[i] || "";
-        i++;
-        if (i > texto.length) {
-          clearInterval(digita);
-          titulo.style.filter = "drop-shadow(0 8px 24px rgba(124,58,237,.28))";
+document.addEventListener("DOMContentLoaded", () => {
+  // Título digitando
+  const titulo = document.querySelector(".titulo");
+
+  if (titulo) {
+    const textoOriginal = titulo.textContent.trim();
+    titulo.textContent = "";
+    let i = 0;
+
+    const digita = setInterval(() => {
+      titulo.textContent += textoOriginal[i] || "";
+      i++;
+
+      if (i > textoOriginal.length) {
+        clearInterval(digita);
+        titulo.style.filter =
+          "drop-shadow(0 10px 26px rgba(96, 165, 250, 0.22))";
+      }
+    }, 34);
+  }
+
+  // Reveal
+  const elementos = document.querySelectorAll("section, footer, header");
+
+  elementos.forEach((el) => el.classList.add("reveal"));
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("on");
+          observer.unobserve(entry.target);
         }
-      }, 36);
-      document
-        .querySelectorAll("section,footer,header")
-        .forEach((el) => el.classList.add("reveal"));
-      const io = new IntersectionObserver(
-        (es) => {
-          es.forEach((e) => {
-            if (e.isIntersecting) {
-              e.target.classList.add("on");
-              io.unobserve(e.target);
-            }
-          });
-        },
-        { threshold: 0.15 },
-      );
-      document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
-      const toggle = document.getElementById("toggleTema");
-      toggle.addEventListener("click", () => {
-        document.body.classList.toggle("dark");
       });
-      function ripple(e) {
-        const b = e.currentTarget;
-        const r = document.createElement("span");
-        const rect = b.getBoundingClientRect();
-        const s = Math.max(rect.width, rect.height);
-        r.style.width = r.style.height = s + "px";
-        r.style.position = "absolute";
-        r.style.left = e.clientX - rect.left - s / 2 + "px";
-        r.style.top = e.clientY - rect.top - s / 2 + "px";
-        r.style.background =
-          "radial-gradient(circle, rgba(255,255,255,.55) 0, rgba(255,255,255,0) 60%)";
-        r.style.borderRadius = "50%";
-        r.style.pointerEvents = "none";
-        r.style.transform = "scale(.6)";
-        r.style.opacity = "1";
-        r.style.transition = "transform .35s ease, opacity .5s ease";
-        b.style.overflow = "hidden";
-        b.appendChild(r);
-        requestAnimationFrame(() => {
-          r.style.transform = "scale(2.2)";
-          r.style.opacity = "0";
-        });
-        setTimeout(() => {
-          r.remove();
-        }, 500);
-      }
-      document
-        .querySelectorAll("button")
-        .forEach((b) => b.addEventListener("click", ripple, { passive: true }));
-      const toast = document.createElement("div");
-      toast.id = "toast";
-      toast.textContent = "Feedback enviado";
-      document.body.appendChild(toast);
-      function showToast() {
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 1800);
-      }
-      function confete() {
-        const c = document.createElement("canvas");
-        c.className = "confete";
-        document.body.appendChild(c);
-        const ctx = c.getContext("2d");
-        const d = () => {
-          c.width = window.innerWidth;
-          c.height = window.innerHeight;
-        };
-        d();
-        const parts = [];
-        for (let i = 0; i < 150; i++) {
-          parts.push({
-            x: Math.random() * c.width,
-            y: -Math.random() * c.height,
-            vy: 2 + Math.random() * 3,
-            vx: -2 + Math.random() * 4,
-            s: 4 + Math.random() * 6,
-            c: ["#7c3aed", "#22d3ee", "#10b981", "#f59e0b", "#ef4444"][
-              Math.floor(Math.random() * 5)
-            ],
-            a: Math.random() * 360,
-          });
-        }
-        let t = 0;
-        const step = () => {
-          ctx.clearRect(0, 0, c.width, c.height);
-          parts.forEach((p) => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.02;
-            p.a += 2;
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            ctx.rotate((p.a * Math.PI) / 180);
-            ctx.fillStyle = p.c;
-            ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s);
-            ctx.restore();
-          });
-          t += 16;
-          if (t < 1600) requestAnimationFrame(step);
-          else c.remove();
-        };
-        window.addEventListener("resize", d);
-        step();
-      }
-      document.getElementById("feedbackBtn").addEventListener("click", () => {
-        showToast();
-        confete();
+    },
+    { threshold: 0.12 }
+  );
+
+  document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+
+  // Alternar tema
+  const toggleTema = document.getElementById("toggleTema");
+
+  if (toggleTema) {
+    toggleTema.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+    });
+  }
+
+  // Ripple
+  function ripple(e) {
+    const botao = e.currentTarget;
+    const circulo = document.createElement("span");
+    const rect = botao.getBoundingClientRect();
+    const tamanho = Math.max(rect.width, rect.height);
+
+    circulo.style.width = `${tamanho}px`;
+    circulo.style.height = `${tamanho}px`;
+    circulo.style.position = "absolute";
+    circulo.style.left = `${e.clientX - rect.left - tamanho / 2}px`;
+    circulo.style.top = `${e.clientY - rect.top - tamanho / 2}px`;
+    circulo.style.background =
+      "radial-gradient(circle, rgba(255,255,255,.45) 0%, rgba(255,255,255,0) 65%)";
+    circulo.style.borderRadius = "50%";
+    circulo.style.pointerEvents = "none";
+    circulo.style.transform = "scale(.5)";
+    circulo.style.opacity = "1";
+    circulo.style.transition = "transform .45s ease, opacity .55s ease";
+
+    botao.style.overflow = "hidden";
+    botao.appendChild(circulo);
+
+    requestAnimationFrame(() => {
+      circulo.style.transform = "scale(2.2)";
+      circulo.style.opacity = "0";
+    });
+
+    setTimeout(() => {
+      circulo.remove();
+    }, 550);
+  }
+
+  document.querySelectorAll("button, .btn").forEach((botao) => {
+    botao.addEventListener("click", ripple, { passive: true });
+  });
+
+  // Toast
+  const toast = document.createElement("div");
+  toast.id = "toast";
+  toast.textContent = "Feedback enviado com sucesso 🚀";
+  document.body.appendChild(toast);
+
+  function showToast() {
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 1800);
+  }
+
+  // Confete
+  function confete() {
+    const canvas = document.createElement("canvas");
+    canvas.className = "confete";
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    resizeCanvas();
+
+    const pecas = [];
+    const cores = ["#7c3aed", "#22d3ee", "#10b981", "#f59e0b", "#ef4444"];
+
+    for (let i = 0; i < 140; i++) {
+      pecas.push({
+        x: Math.random() * canvas.width,
+        y: -Math.random() * canvas.height,
+        vx: -2 + Math.random() * 4,
+        vy: 2 + Math.random() * 3,
+        s: 5 + Math.random() * 7,
+        c: cores[Math.floor(Math.random() * cores.length)],
+        a: Math.random() * 360,
       });
+    }
+
+    let tempo = 0;
+
+    function animar() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      pecas.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.018;
+        p.a += 2;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.a * Math.PI) / 180);
+        ctx.fillStyle = p.c;
+        ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s);
+        ctx.restore();
+      });
+
+      tempo += 16;
+
+      if (tempo < 1700) {
+        requestAnimationFrame(animar);
+      } else {
+        canvas.remove();
+      }
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    animar();
+  }
+
+  const feedbackBtn = document.getElementById("feedbackBtn");
+
+  if (feedbackBtn) {
+    feedbackBtn.addEventListener("click", () => {
+      showToast();
+      confete();
+    });
+  }
+});
